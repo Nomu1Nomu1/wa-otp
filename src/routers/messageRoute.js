@@ -1,6 +1,7 @@
 import express from 'express';
 import whatsappClient from '../services/WhatsappClient.js';
 import pkg from 'whatsapp-web.js';
+import Image from '../models/images.js';
 const { MessageMedia } = pkg;
 
 const router = new express.Router();
@@ -33,7 +34,22 @@ router.post("/message", async (req, res) => {
 
 router.get('/media-photo', async (req, res) => {
   try {
-    
+    const images = await Image.findAll({
+      attributes: ['judul', 'deskripsi', 'gambar']
+    });
+
+    const formatedImages = images.map(images => ({
+      judul: images.judul,
+      deskripsi: images.deskripsi,
+      gambar: images.gambar
+    }));
+
+    const mediaImages = formatedImages.map(item => ({
+      ...item,
+      gambar: `http://localhost:3000/src/assets/photo/${item.gambar}`
+    }));
+
+    res.status(200).json(mediaImages);
   } catch (error) {
     res.status(500).send({ status: 'Failed to send media', error });
   }
