@@ -1,14 +1,17 @@
-const { Client, LocalAuth } = require("whatsapp-web.js");
-const qrcode = require("qrcode-terminal");
+import pkg from "whatsapp-web.js";
+const { Client, LocalAuth } = pkg;
+import qrcode from "qrcode-terminal";
 
 const whatsappClient = new Client({
   authStrategy: new LocalAuth(),
 });
 
-whatsappClient.on('qr', (qr) => {
-    console.log('QR Code diterima. Silakan pindai menggunakan aplikasi WhatsApp.');
-    qrcode.generate(qr, { small: true });
-  });
+whatsappClient.on("qr", (qr) => {
+  console.log(
+    "QR Code diterima. Silakan pindai menggunakan aplikasi WhatsApp."
+  );
+  qrcode.generate(qr, { small: true });
+});
 
 whatsappClient.on("ready", () => console.log("client is ready"));
 
@@ -27,9 +30,9 @@ whatsappClient.on("message", async (msg) => {
   }
 });
 
-whatsappClient.on('disconnected', (reason) => {
-    console.log('Klien terputus', reason);
-    whatsappClient.initialize(); 
-  });
+whatsappClient.on("disconnected", (reason) => {
+  console.log("Klien terputus", reason);
+  whatsappClient.initialize();
+});
 
-module.exports = whatsappClient;
+export default whatsappClient;
