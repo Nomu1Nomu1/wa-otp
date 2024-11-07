@@ -58,8 +58,11 @@ router.post("/broadcast", async (req, res) => {
     const user = await User.findAll({
       attributes: ["phone_number"],
       limit: 3,
+      offset: 3,
       order: Sequelize.fn("RAND"),
     });
+
+    console.log(user);
 
     const phone_numbers = user.map((user) => user.phone_number);
 
