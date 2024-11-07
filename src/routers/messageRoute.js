@@ -2,10 +2,7 @@ import express from "express";
 import axios from "axios";
 import whatsappClient from "../services/WhatsappClient.js";
 import pkg from "whatsapp-web.js";
-import Image from "../models/images.js";
-import Video from "../models/videos.js";
-import User from "../models/user.js";
-import Users from "../models/users.js";
+import Informan from "../models/Informan.js";
 import { Sequelize } from "sequelize";
 const { MessageMedia } = pkg;
 
@@ -16,11 +13,6 @@ const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 router.get("/", (req, res) => {
   res.send("Hello World!");
 });
-
-// router.post("/message", (req, res) => {
-//   whatsappClient.sendMessage(req.body.phoneNumber, req.body.message);
-//   res.send();
-// })
 
 router.post("/message", async (req, res) => {
   const { phoneNumber, message, mediaUrl, mediaType } = req.body;
@@ -55,16 +47,13 @@ router.post("/broadcast", async (req, res) => {
   const { message, mediaUrl, mediaType } = req.body;
 
   try {
-    const user = await User.findAll({
-      attributes: ["phone_number"],
-      limit: 3,
-      offset: 3,
-      order: Sequelize.fn("RAND"),
+    const informan = await Informan.findAll({
+      attributes: ["nama","no_hp"],
+      limit: 100,
+      offset: 53,
     });
 
-    console.log(user);
-
-    const phone_numbers = user.map((user) => user.phone_number);
+    const phone_numbers = informan.map((item) => item.no_hp);
 
     for(const phone_number of phone_numbers ) {
 
@@ -97,76 +86,6 @@ router.post("/broadcast", async (req, res) => {
     res
       .status(500)
       .send({ status: "Failed to send broadcast", error: error.message });
-  }
-});
-
-router.get("/user-data", async (req, res) => {
-  try {
-    const user = await Users.findAll({
-      attributes: ["nama", "no_hp"],
-      limit: 3,
-      order: Sequelize.fn("RAND"),
-    });
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).send({ status: "Failed to send user data", error });
-  }
-})
-
-router.get("/user-data-local", async (req, res) => {
-  try {
-    const user = await User.findAll({
-      attributes: ["nama", "phone_number"],
-      limit: 3,
-      order: Sequelize.fn("RAND"),
-    });
-
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).send({ status: "Failed to send user data", error });
-  }
-})
-
-router.get("/media-photo", async (req, res) => {
-  try {
-    const images = await Image.findAll({
-      attributes: ["gambar"],
-    });
-
-    const formatedImages = images.map((images) => ({
-      gambar: images.gambar,
-    }));
-
-    const mediaImages = formatedImages.map((item) => ({
-      ...item,
-      gambar: `http://localhost:3000/src/assets/photo/${item.gambar}`,
-    }));
-
-    res.status(200).json(mediaImages);
-  } catch (error) {
-    res.status(500).send({ status: "Failed to send media", error });
-  }
-});
-
-router.get("/media-video", async (req, res) => {
-  try {
-    const video = await Video.findAll({
-      attributes: ["video"],
-    });
-
-    const formatedVideo = video.map((video) => ({
-      video: video.video,
-    }));
-
-    const mediaVideo = formatedVideo.map((item) => ({
-      ...item,
-      video: `http://localhost:3000/src/assets/video/${item.video}`,
-    }));
-
-    res.status(200).json(mediaVideo);
-  } catch (error) {
-    res.status(500).send({ status: "Failed to send media", error });
   }
 });
 

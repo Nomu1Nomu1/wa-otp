@@ -6,7 +6,6 @@ const app = express();
 const port = 3000;
 
 app.use('/src/assets/photo', express.static('src/assets/photo'));
-app.use('/src/assets/video', express.static('src/assets/video'));
 
 whatsappClient.initialize().catch(err => {
   console.log("Gagal menginisialisasi Klien WhatsApp", err);

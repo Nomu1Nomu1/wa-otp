@@ -1,22 +1,22 @@
+import database from "../config/database.js";
 import { Sequelize } from "sequelize";
-import db from "../config/db.js";
 
 const { DataTypes } = Sequelize;
 
-const User = db.define(
-    'users',
+const Informan = database.define(
+    'data_informan', 
     {
         nama: {
             type: DataTypes.STRING
         },
-        phone_number: {
+        no_hp: {
             type: DataTypes.STRING
         }
-    },
+    }, 
     {
         freezeTableName: true,
         underscored: true
     }
 )
 
-export default User;
+export default Informan;
