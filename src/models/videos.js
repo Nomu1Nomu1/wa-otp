@@ -6,12 +6,6 @@ const { DataTypes } = Sequelize;
 const Video = db.define(
     'videos', 
     {
-        judul: {
-            type: DataTypes.STRING
-        },
-        deskripsi: {
-            type: DataTypes.STRING
-        },
         video: {
             type: DataTypes.STRING
         }

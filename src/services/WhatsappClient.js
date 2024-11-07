@@ -3,7 +3,9 @@ const { Client, LocalAuth } = pkg;
 import qrcode from "qrcode-terminal";
 
 const whatsappClient = new Client({
+  puppeteer: { headless: true },
   authStrategy: new LocalAuth(),
+  logLevel: 'verbose',
 });
 
 whatsappClient.on("qr", (qr) => {
@@ -31,8 +33,11 @@ whatsappClient.on("message", async (msg) => {
 });
 
 whatsappClient.on("disconnected", (reason) => {
-  console.log("Klien terputus", reason);
-  whatsappClient.initialize();
+  console.log("Client disconnected:", reason);
+  setTimeout(() => {
+    console.log("Attempting to reconnect...");
+    whatsappClient.initialize();
+  }, 10000); 
 });
 
 export default whatsappClient;

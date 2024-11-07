@@ -6,12 +6,6 @@ const { DataTypes } = Sequelize;
 const Image = db.define(
     'images', 
     {
-        judul: {
-            type: DataTypes.STRING
-        },
-        deskripsi: {
-            type: DataTypes.STRING
-        },
         gambar: {
             type: DataTypes.STRING
         }
