@@ -33,10 +33,10 @@ whatsappClient.on("message", async (msg) => {
 });
 
 whatsappClient.on("disconnected", (reason) => {
-  console.log("Client disconnected:", reason);
-  setTimeout(() => {
+  console.log("Client disconnected due to", reason);
+  setTimeout(async () => {
     console.log("Attempting to reconnect...");
-    whatsappClient.initialize();
+    await whatsappClient.initialize();
   }, 10000); 
 });
 

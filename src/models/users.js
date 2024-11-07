@@ -14,3 +14,5 @@ const Users = database.define(
         }
     }
 )
+
+export default Users;
