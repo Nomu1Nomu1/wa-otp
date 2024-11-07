@@ -5,9 +5,13 @@ import pkg from "whatsapp-web.js";
 import Image from "../models/images.js";
 import Video from "../models/videos.js";
 import User from "../models/user.js";
+import Users from "../models/users.js";
+import { Sequelize } from "sequelize";
 const { MessageMedia } = pkg;
 
 const router = new express.Router();
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 router.get("/", (req, res) => {
   res.send("Hello World!");
@@ -23,12 +27,11 @@ router.post("/message", async (req, res) => {
 
   try {
     if (mediaUrl) {
-      // Manually fetch media
       const response = await axios.get(mediaUrl, {
         responseType: "arraybuffer",
       });
       const mediaData = Buffer.from(response.data).toString("base64");
-      const mimeType = response.headers["content-type"]; // Get MIME type from the headers
+      const mimeType = response.headers["content-type"];
       const filename = mediaType === "video" ? "video.mp4" : "image.jpg";
 
       const media = new MessageMedia(mimeType, mediaData, filename);
@@ -54,10 +57,16 @@ router.post("/broadcast", async (req, res) => {
   try {
     const user = await User.findAll({
       attributes: ["phone_number"],
+      limit: 3,
+      order: Sequelize.fn("RAND"),
     });
-    const phone_numbers = user.map(user => user.phone_number);
+
+    const phone_numbers = user.map((user) => user.phone_number);
 
     for(const phone_number of phone_numbers ) {
+
+      const phoneSuffix = `${phone_number}@c.us`
+
       if (mediaUrl) {
         const response = await axios.get(mediaUrl, {
           responseType: "arraybuffer",
@@ -68,12 +77,15 @@ router.post("/broadcast", async (req, res) => {
 
         const media = new MessageMedia(mimeType, mediaData, filename);
 
-        await whatsappClient.sendMessage(phone_number, media, {
+        await whatsappClient.sendMessage(phoneSuffix, media, {
           caption: message,
         });
       } else {
-        await whatsappClient.sendMessage(phone_number, message);
+        await whatsappClient.sendMessage(phoneSuffix, message);
       }
+
+      const randomDelay = Math.floor(Math.random() * 3000) + 1000;
+      await delay(randomDelay);
     }
 
     res.send({ status: "Broadcast sent successfully" });
@@ -84,6 +96,34 @@ router.post("/broadcast", async (req, res) => {
       .send({ status: "Failed to send broadcast", error: error.message });
   }
 });
+
+router.get("/user-data", async (req, res) => {
+  try {
+    const user = await Users.findAll({
+      attributes: ["nama", "no_hp"],
+      limit: 3,
+      order: Sequelize.fn("RAND"),
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send({ status: "Failed to send user data", error });
+  }
+})
+
+router.get("/user-data-local", async (req, res) => {
+  try {
+    const user = await User.findAll({
+      attributes: ["nama", "phone_number"],
+      limit: 3,
+      order: Sequelize.fn("RAND"),
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).send({ status: "Failed to send user data", error });
+  }
+})
 
 router.get("/media-photo", async (req, res) => {
   try {

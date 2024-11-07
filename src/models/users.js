@@ -12,6 +12,10 @@ const Users = database.define(
         no_hp: {
             type: DataTypes.STRING
         }
+    }, 
+    {
+        freezeTableName: true,
+        underscored: true
     }
 )
 
