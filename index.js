@@ -1,6 +1,7 @@
 import express from "express";
 import messageRouter from "./src/routers/messageRoute.js";
 import whatsappClient from "./src/services/WhatsappClient.js";
+import dotenv from "dotenv";
 
 dotenv.config();
 
